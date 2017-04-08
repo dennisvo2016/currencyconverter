@@ -1,5 +1,6 @@
 package com.example.hp.currencyconveterapp;
 
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -47,6 +48,14 @@ public class MainActivity extends AppCompatActivity {
     EditText txt_source;
     TextView txt_destination;
     Button buttonchange;
+    String prefname = "my_data";
+
+    public boolean isConnected() throws InterruptedException, IOException
+    {
+        String command = "ping -c 1 google.com";
+        return (Runtime.getRuntime().exec (command).waitFor() == 0);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,13 +81,55 @@ public class MainActivity extends AppCompatActivity {
         txt_source = (EditText) findViewById(R.id.editText_source);
         txt_destination = (TextView) findViewById(R.id.textView_destination);
         buttonchange = (Button) findViewById(R.id.button_con);
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                new ReadJSON().execute(url1, url2, url3, url4);
+        try {
+            if (isConnected()) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        new ReadJSON().execute(url1, url2, url3, url4);
+                    }
+                });
+                onPause();
+            } else {
+                onResume();
+//                Toast.makeText(MainActivity.this, "Please connect to your internet first!", Toast.LENGTH_LONG).show();
             }
-        });
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    protected void onPause(){
+        super.onPause();
+        savingref();
+    }
+
+    protected void onResume(){
+        super.onResume();
+        restoringref();
+    }
+
+    public void savingref(){
+        SharedPreferences pre = getSharedPreferences(prefname, MODE_PRIVATE);
+        SharedPreferences.Editor editor = pre.edit();
+        String usd = txt_usdvnd.getText().toString(), eur = txt_eurvnd.getText().toString(),
+                jpy = txt_jpyvnd.getText().toString(), gbp = txt_gbpvnd.getText().toString();
+        editor.clear();
+        editor.putString("usd", usd);
+        editor.putString("eur", eur);
+        editor.putString("jpy", jpy);
+        editor.putString("gbp", gbp);
+        editor.commit();
+    }
+
+    public void restoringref(){
+        SharedPreferences pre = getSharedPreferences(prefname, MODE_PRIVATE);
+        String usd = pre.getString("usd","0000"), eur = pre.getString("eur","0000"),
+                jpy = pre.getString("jpy","0000"), gbp = pre.getString("gbp","0000");
+        txt_usdvnd.setText(usd);
+        txt_eurvnd.setText(eur);
+        txt_jpyvnd.setText(jpy);
+        txt_gbpvnd.setText(gbp);
     }
 
     public void convert(View view){
