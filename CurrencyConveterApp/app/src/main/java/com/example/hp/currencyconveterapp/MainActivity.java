@@ -25,6 +25,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 
 import static org.apache.http.protocol.HTTP.UTF_8;
 
@@ -81,30 +83,65 @@ public class MainActivity extends AppCompatActivity {
 
     public void convert(View view){
         String source = txt_source.getText().toString();
-        Integer sourceint = Integer.parseInt(source);
         sourcechange = currencyspin.getSelectedItem().toString();
-        Integer rate = 0, result = 0;
-        if (!source.isEmpty()){
-            switch (sourcechange){
+        Double rate = 0.0, result = 0.0, sourcenum = 0.0;
+        if (!source.isEmpty()) {
+            try {
+                sourcenum = Double.parseDouble(source);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+            switch (sourcechange) {
                 case "USD":
-                    String haha = txt_usdvnd.getText().toString();
-//                    rate = Integer.parseInt(txt_usdvnd.getText().toString());
-                    txt_destination.setText(haha);
+                    try {
+                        rate = Double.parseDouble(txt_usdvnd.getText().toString());
+                        result = (rate * sourcenum);
+                        DecimalFormat df = new DecimalFormat("#.####");
+                        df.setRoundingMode(RoundingMode.CEILING);
+                        txt_destination.setText(df.format(result));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case "EUR":
-                    txt_source.setText(sourcechange);
+                    try {
+                        rate = Double.parseDouble(txt_eurvnd.getText().toString());
+                        result = (rate * sourcenum);
+                        DecimalFormat df = new DecimalFormat("#.####");
+                        df.setRoundingMode(RoundingMode.CEILING);
+                        txt_destination.setText(df.format(result));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case "JPY":
-                    txt_source.setText(sourcechange);
+                    try {
+                        rate = Double.parseDouble(txt_jpyvnd.getText().toString());
+                        result = (rate * sourcenum);
+                        DecimalFormat df = new DecimalFormat("#.####");
+                        df.setRoundingMode(RoundingMode.CEILING);
+                        txt_destination.setText(df.format(result));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case "GBP":
-                    txt_source.setText(sourcechange);
+                    try {
+                        rate = Double.parseDouble(txt_gbpvnd.getText().toString());
+                        result = (rate * sourcenum);
+                        DecimalFormat df = new DecimalFormat("#.####");
+                        df.setRoundingMode(RoundingMode.CEILING);
+                        txt_destination.setText(df.format(result));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 default:
                     break;
             }
-        }else{
-            Toast.makeText(MainActivity.this, "You did not enter the source", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "DONE", Toast.LENGTH_LONG).show();
+        }else {
+            Toast.makeText(MainActivity.this, "You have to fill in source number first!", Toast.LENGTH_LONG).show();
         }
     }
 
