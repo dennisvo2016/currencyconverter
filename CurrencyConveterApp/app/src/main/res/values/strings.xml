@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">CurrencyConveterApp</string>
+    <string name="action_settings">Settings</string>
+    <string-array name="currency">
+        <item>USD</item>
+        <item>EUR</item>
+        <item>JPY</item>
+        <item>GBP</item>
+    </string-array>
+</resources>
